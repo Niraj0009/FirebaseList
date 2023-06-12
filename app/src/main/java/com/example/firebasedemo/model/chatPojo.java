@@ -1,4 +1,4 @@
-package com.example.firebasedemo;
+package com.example.firebasedemo.model;
 
 import java.io.Serializable;
 

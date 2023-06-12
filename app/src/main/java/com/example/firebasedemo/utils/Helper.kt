@@ -1,4 +1,4 @@
-package com.example.firebasedemo
+package com.example.firebasedemo.utils
 
 import android.content.Context
 import android.graphics.Color
