@@ -2,7 +2,9 @@ package com.example.firebasedemo
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Toast
@@ -10,13 +12,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.ThemedSpinnerAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.FirebaseApp
 import com.google.firebase.database.*
 
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var rvView: RecyclerView
+    private lateinit var userListAdapter: UserListAdapter
     val firebaseDataSnapshot = MutableLiveData<DataSnapshot>()
     private var mFirebaseDatabaseReferenceone2one: DatabaseReference? = null
-    var ivSend: ImageView? = null
+    var ivSend: Button? = null
     var etMessage: EditText? = null
 
 
@@ -26,7 +32,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         ivSend = findViewById(R.id.ivSend)
         etMessage = findViewById(R.id.etMessage)
-
+        rvView = findViewById(R.id.rvView)
+        FirebaseApp.initializeApp(this)
+        userListAdapter=UserListAdapter(ArrayList())
 
 //        ivSend.setOnClickListener {
 //            if (Helper.isConnected(this@MainActivity)) {
@@ -57,15 +65,17 @@ class MainActivity : AppCompatActivity() {
 
         firebaseDataSnapshot.observe(this) { dataSnapshot ->
             if (dataSnapshot.value != null) {
-//                chatAdapter.clearList()
+                userListAdapter.clearList()
+                Log.e("Firebase", "initChat: " + dataSnapshot.value)
 
                 for (snapShot in dataSnapshot.children) {
                     val chatPojo = snapShot.getValue(chatPojo::class.java)
-//                    chatAdapter.updateList(chatPojo)
+                    Log.e("Firebase", "initChat: " + snapShot)
+                    userListAdapter.updateList(chatPojo)
                 }
 
                 // Scroll to Last
-//                binding.chatRecyclerView.scrollToPosition(chatAdapter.itemCount - 1)
+                rvView.scrollToPosition(userListAdapter.itemCount - 1)
             }
         }
 
@@ -113,10 +123,11 @@ class MainActivity : AppCompatActivity() {
 
     fun initChat(chatNode: String) {
         try {
+            rvView.adapter = userListAdapter
             mFirebaseDatabaseReferenceone2one =
                 FirebaseDatabase.getInstance("https://fir-list-29c11-default-rtdb.firebaseio.com/")
                     .reference
-                    .child("/chat_master/" + "1TO1/")
+                    .child("/chat_master/")
 
             mFirebaseDatabaseReferenceone2one?.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -130,6 +141,8 @@ class MainActivity : AppCompatActivity() {
 
             mFirebaseDatabaseReferenceone2one?.limitToLast(500)
         } catch (e: Exception) {
+            Log.e("ERROR", "initChat: " + e.localizedMessage)
+            Log.e("ERROR", "initChat: " + e.localizedMessage)
 //            Helper.logPrinter(Configuration.TAG, "e", e.localizedMessage, "")
         }
     }
