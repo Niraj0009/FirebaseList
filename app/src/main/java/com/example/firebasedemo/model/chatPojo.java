@@ -10,7 +10,7 @@ public class chatPojo implements Serializable {
     String id;
     String message;
     String name;
-    long date;
+    String date;
     String is_active;
     String profile_picture;
     String platform;
@@ -26,7 +26,7 @@ public class chatPojo implements Serializable {
     public chatPojo() {
     }
 
-    public chatPojo(String id, String message, String name, long date, String is_active, String profile_picture) {
+    public chatPojo(String id, String message, String name, String date, String is_active, String profile_picture) {
         this.id = id;
         this.message = message;
         this.name = name;
@@ -172,11 +172,11 @@ public class chatPojo implements Serializable {
         this.name = name;
     }
 
-    public long getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(long date) {
+    public void setDate(String date) {
         this.date = date;
     }
 }
